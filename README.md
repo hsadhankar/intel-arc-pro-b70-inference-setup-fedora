@@ -136,7 +136,8 @@ Check the full log: `/tmp/fedora-b70-setup.log`
 
 ## Credits
 
-This repo is a Fedora adaptation of [Hal9000AIML/arc-pro-b70-inference-setup-ubuntu-server](https://github.com/Hal9000AIML/arc-pro-b70-inference-setup-ubuntu-server). Most of the logic is from the original — we ported the package manager commands, kernel config paths, and firmware handling to match Fedora 44.
+- Fedora adaptation of [Hal9000AIML/arc-pro-b70-inference-setup-ubuntu-server](https://github.com/Hal9000AIML/arc-pro-b70-inference-setup-ubuntu-server). Most logic was ported to Fedora 44 (package manager, kernel config, and firmware handling).
+- Acknowledgements: `llama.cpp` by ggerganov — https://github.com/ggerganov/llama.cpp (used for model inference; MIT license).
 
 ## License
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # xe_tuning.sh — Intel xe driver tuning for Battlemage inference workloads
 #
+# NOTE: Must be run as root (sudo). Writes to /sys/devices/... files.
+#
 # Raises job timeouts, disables DVFS, and optimizes PCIe ASPM for
 # long-running LLM inference workloads on Intel Arc Pro B70 GPUs.
 set -u

@@ -34,5 +34,4 @@ exec ${HOME}/llama.cpp/build_vulkan/bin/llama-server \
     --defrag-thold 0.1 \
     -t 1 \
     --host 0.0.0.0 \
-    --port "${PORT}" \
-    "$@"
+    --port "${PORT}"
