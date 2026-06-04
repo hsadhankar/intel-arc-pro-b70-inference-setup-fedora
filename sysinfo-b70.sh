@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+echo "=== Intel Arc Pro B70 Inference Server ==="
+echo "Host:   $(hostname)"
+echo "Date:   $(date)"
+echo "Kernel: $(uname -r)"
+echo "Uptime: $(uptime -p)"
+echo "RAM:    $(free -h | awk '/Mem:/{print $3"/"$2}')"
+echo "Swap:   $(free -h | awk '/Swap:/{print $3"/"$2}')"
+echo "CPU:    $(lscpu | grep 'Model name' | head -1 | cut -d: -f2 | xargs)"
+echo ""
+echo "=== GPU ==="
+lspci -nn | grep -iE "VGA|3D|Display|Battlemage"
+echo ""
+echo "=== GPU Memory ==="
+cat /sys/class/drm/card*/device/mem_info_vram_total 2>/dev/null | \
+    awk '{printf "  VRAM Total: %.2f GiB\n", $1/1024/1024/1024}' || true
+cat /sys/class/drm/card*/device/mem_info_vram_free 2>/dev/null | \
+    awk '{printf "  VRAM Free:  %.2f GiB\n", $1/1024/1024/1024}' || true
+echo ""
+echo "=== Vulkan Devices ==="
+vulkaninfo --summary 2>/dev/null | grep -E "deviceName|deviceID|deviceType" | head -10 || echo "(not available)"
+echo ""
+echo "=== Level Zero Devices ==="
+ls /dev/dri/render* 2>/dev/null | xargs -I{} sh -c 'echo "  {}: $(cat /sys/class/drm/$(basename {})/device/device 2>/dev/null)"' 2>/dev/null || echo "  (check /dev/dri)"
+echo ""
+echo "=== GPU Temperature ==="
+sensors 2>/dev/null | grep -E "xe|PCH|GPU|edge" | head -10 || echo "(install lm_sensors)"
+echo ""
+echo "=== llama.cpp ==="
+LS_SYCL="${HOME}/llama.cpp/build_sycl/bin/llama-server"
+LS_VK="${HOME}/llama.cpp/build_vulkan/bin/llama-server"
+[[ -x "$LS_SYCL" ]] && echo "  SYCL:   $($LS_SYCL --version 2>/dev/null | head -1)" || echo "  SYCL:   not built"
+[[ -x "$LS_VK" ]] && echo "  Vulkan: $($LS_VK --version 2>/dev/null | head -1)" || echo "  Vulkan: not built"
