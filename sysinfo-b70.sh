@@ -12,10 +12,32 @@ echo "=== GPU ==="
 lspci -nn | grep -iE "VGA|3D|Display|Battlemage"
 echo ""
 echo "=== GPU Memory ==="
-cat /sys/class/drm/card*/device/mem_info_vram_total 2>/dev/null | \
-    awk '{printf "  VRAM Total: %.2f GiB\n", $1/1024/1024/1024}' || true
-cat /sys/class/drm/card*/device/mem_info_vram_free 2>/dev/null | \
-    awk '{printf "  VRAM Free:  %.2f GiB\n", $1/1024/1024/1024}' || true
+for card in /sys/class/drm/card[0-9]*; do
+    total=$(cat "$card/device/mem_info_vram_total" 2>/dev/null) || continue
+    vendor=$(cat "$card/device/vendor" 2>/dev/null)
+    name="GPU"
+    case "$vendor" in
+        0x8086) name="Intel" ;;
+        0x1002) name="AMD" ;;
+        0x10de) name="NVIDIA" ;;
+    esac
+    echo "  ${name} VRAM Total: $(awk "BEGIN {printf \"%.2f GiB\", $total/1073741824}")"
+    free=$(cat "$card/device/mem_info_vram_free" 2>/dev/null)
+    [[ -n "$free" ]] && echo "  ${name} VRAM Free:  $(awk "BEGIN {printf \"%.2f GiB\", $free/1073741824}")"
+done
+# For Intel Arc GPUs without a DRM node (xe driver), read VRAM from PCI BAR
+for dev in $(lspci -nn | grep -i "Battlemage" | cut -d' ' -f1); do
+    driver=$(lspci -k -s "$dev" 2>/dev/null | awk -F': ' '/Kernel driver in use/{print $2}')
+    modules=$(lspci -k -s "$dev" 2>/dev/null | awk -F': ' '/Kernel modules/{print $2}')
+    bar=$(lspci -vvv -s "$dev" 2>/dev/null | grep -i "Region 2" | grep -oP 'size=\K[0-9]+[MG]')
+    if [[ -n "$bar" ]]; then
+        if [[ -n "$driver" ]]; then
+            echo "  Intel Arc VRAM (from BAR): $bar (driver: $driver)"
+        else
+            echo "  Intel Arc VRAM (from BAR): $bar (module: ${modules:-none} — not bound)"
+        fi
+    fi
+done
 echo ""
 echo "=== Vulkan Devices ==="
 vulkaninfo --summary 2>/dev/null | grep -E "deviceName|deviceID|deviceType" | head -10 || echo "(not available)"

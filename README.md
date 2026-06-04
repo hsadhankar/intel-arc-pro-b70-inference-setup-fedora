@@ -41,7 +41,7 @@ huggingface-cli download unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-UD-Q4_K_XL.gguf \
     --local-dir ~/models --local-dir-use-symlinks False
 
 # 5. Start the server (SYCL backend — best performance)
-~/start_llamacpp_sycl.sh ~/models/Qwen3.6-27B-UD-Q4_K_XL.gguf 8000 SYCL0
+./start_llamacpp_sycl.sh ~/models/Qwen3.6-27B-UD-Q4_K_XL.gguf 8000 SYCL0
 
 # 6. Test the API
 curl http://localhost:8000/v1/chat/completions \
@@ -52,19 +52,19 @@ curl http://localhost:8000/v1/chat/completions \
 The `--download` flag can also be used to download and serve in one step:
 
 ```bash
-~/start_llamacpp_sycl.sh --download unsloth/Qwen3.6-27B-GGUF UD-Q4_K_XL 8000 SYCL0
+./start_llamacpp_sycl.sh --download unsloth/Qwen3.6-27B-GGUF UD-Q4_K_XL 8000 SYCL0
 ```
 
 ## Scripts
 
-All scripts installed to `~/` by the setup script.
+Run from the cloned directory (`./script.sh`) or from `~/` after setup installs copies there.
 
 | Script | Purpose |
 |---|---|
-| `~/start_llamacpp_sycl.sh` | Launch llama-server with the **SYCL** backend. `source`s oneAPI, sets critical env vars. |
-| `~/start_llamacpp_vulkan.sh` | Launch llama-server with the **Vulkan** backend. |
-| `~/sysinfo-b70.sh` | Print GPU, VRAM, driver, and build info. |
-| `~/xe_tuning.sh` | Tune the `xe` kernel driver for inference workloads (safe to re-run anytime). |
+| `./start_llamacpp_sycl.sh` | Launch llama-server with the **SYCL** backend. `source`s oneAPI, sets critical env vars. |
+| `./start_llamacpp_vulkan.sh` | Launch llama-server with the **Vulkan** backend. |
+| `./sysinfo-b70.sh` | Print GPU, VRAM, driver, and build info. |
+| `./xe_tuning.sh` | Tune the `xe` kernel driver for inference workloads (safe to re-run anytime). |
 
 ### Backend comparison
 
@@ -90,7 +90,7 @@ oneAPI environment is sourced automatically: `source /opt/intel/oneapi/setvars.s
 
 ```bash
 # System + GPU summary
-~/sysinfo-b70.sh
+./sysinfo-b70.sh
 
 # VRAM usage
 sudo cat /sys/class/drm/card*/device/mem_info_vram_*

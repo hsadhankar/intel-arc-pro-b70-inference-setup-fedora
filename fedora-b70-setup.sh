@@ -235,9 +235,9 @@ if curl -fsSLo "$FW_TMP/bmg_guc_70.bin" "$LF_BASE/bmg_guc_70.bin" && \
     
     # Fedora uses .xz compression; check what format the current firmware uses
     if ls /lib/firmware/xe/bmg_guc_70.bin.xz &>/dev/null; then
-        echo "    Compressing to .xz format..."
-        xz -f -k "$FW_TMP/bmg_guc_70.bin"
-        xz -f -k "$FW_TMP/bmg_huc.bin"
+        echo "    Compressing to .xz format (CRC32 for kernel compat)..."
+        xz -f -k --check=crc32 "$FW_TMP/bmg_guc_70.bin"
+        xz -f -k --check=crc32 "$FW_TMP/bmg_huc.bin"
         
         cp /lib/firmware/xe/bmg_guc_70.bin.xz /lib/firmware/xe/bmg_guc_70.bin.xz.bak.$(date +%s) 2>/dev/null || true
         cp /lib/firmware/xe/bmg_huc.bin.xz /lib/firmware/xe/bmg_huc.bin.xz.bak.$(date +%s) 2>/dev/null || true
